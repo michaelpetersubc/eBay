@@ -1,0 +1,6 @@
+name: eBay
+description: Shows an interactive display of eBay auctions in 2001.
+package: Custom
+
+type: module
+core: 8.x

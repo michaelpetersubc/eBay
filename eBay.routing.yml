@@ -1,0 +1,80 @@
+montoya.content:
+  path: '/Econ600'
+  defaults:
+    _controller: '\Drupal\montoya\Controller\MontoyaController::content'
+    _title: 'Econ600'
+    page_name: 'econ600|econ600|0'
+  requirements:
+    _permission: 'access content'
+  options:
+    no_cache: true
+
+montoya.undergrad:
+  path: '/Econ306'
+  defaults:
+    _controller: '\Drupal\montoya\Controller\MontoyaController::content'
+    _title: 'Econ306'
+    page_name: 'econ306|econ306|0'
+  requirements:
+    _permission: 'access content'
+  options:
+    no_cache: true
+
+
+montoya.topic:
+  path: '/Econ515'
+  defaults:
+    _controller: '\Drupal\montoya\Controller\MontoyaController::content'
+    _title: 'Econ515'
+    page_name: 'MicroTopics|econ515|0'
+  requirements:
+    _permission: 'access content'
+  options:
+    no_cache: true
+
+montoya.research:
+  path: '/research'
+  defaults:
+    _controller: '\Drupal\montoya\Controller\MontoyaController::content'
+    _title: 'Research'
+    page_name: 'research|research|0'
+  requirements:
+    _permission: 'access content'
+  options:
+    no_cache: true
+
+montoya.econ600:
+  path: '/Econ600/{filename}'
+  defaults:
+    _controller: '\Drupal\montoya\Controller\MontoyaController::pdf'
+    _title: 'Econ600'
+    filepath: 'Econ600'
+  requirements:
+    _permission: 'access content'
+  options:
+    no_cache: true
+
+
+montoya.econ306:
+  path: '/Econ306/{filename}'
+  defaults:
+    _controller: '\Drupal\montoya\Controller\MontoyaController::pdf'
+    _title: 'Econ306'
+    filepath: 'Econ306'
+  requirements:
+    _permission: 'access content'
+  options:
+    no_cache: true
+
+montoya.econ519:
+  path: '/Econ515/{filename}'
+  defaults:
+    _controller: '\Drupal\montoya\Controller\MontoyaController::pdf'
+    _title: 'Econ515'
+    filepath: 'Econ515'
+  requirements:
+    _permission: 'access content'
+  options:
+    no_cache: true
+
+    
