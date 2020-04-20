@@ -78,6 +78,29 @@ class MontoyaController extends ControllerBase {
       	     '#markup' => $page -> get_text(),
 	   ];
   }
+  public function ebay($pagename) {
+    $f = new Front();
+    switch($pagename) {
+      case 'intro':
+        return $f -> intro();
+        break;
+      case 'main':
+        return $f -> main_page();
+        break;
+      case 'sniping':
+        return $f -> sniping();
+        break;
+      case 'cross':
+        return $f -> cross();
+        break;
+      case 'against':
+        return $f -> against();
+        break;
+      case 'groping':
+        return $f -> groping();
+        break;      
+    }
+  }
   /*
    * display a pdf file
    * the files are retrieved from urls like

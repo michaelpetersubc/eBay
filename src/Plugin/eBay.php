@@ -1,11 +1,11 @@
 <?php
 
-namespace Drupal\montoya\Plugin;
+namespace Drupal\eBay\Plugin;
 
-use Drupal\montoya\Utility;
+use Drupal\eBay\Utility;
 
 
-class Ebay {
+class eBay {
 
   public function driver($start_from, $auction_end, $limit_results_to, $front_page = false) {
     $page = new Utility();
@@ -78,12 +78,15 @@ class Ebay {
       /*$query = "select count(seller) as number_of_auctions,date_format(ending_time,'%Y-%m-%d') 
           as end_string,date_format(ending_time,'%m-%d') as e from ebay where seller !='' group by e,ending_time";
       //print "$first_query"; seller*/
-      $this_result = DB::table('ebay') -> select(DB::raw("
-        count(seller) as number_of_auctions,date_format(ending_time,'%Y-%m-%d') 
-          as end_string,date_format(ending_time,'%m-%d') as e")) -> where('seller', '<>', '')
-          -> orderBy('e', 'asc') -> groupBy('ending_time') -> get();
-     
-        if(count($this_result)  >= 0) {
+      $query = "select count(seller) as number_of_auctions,date_format(ending_time,'%Y-%m-%d') 
+          as end_string,date_format(ending_time,'%m-%d') as e where seller != '' 
+          order by e asc group by ending_time";
+     // $this_result = DB::table('ebay') -> select(DB::raw("
+     //   count(seller) as number_of_auctions,date_format(ending_time,'%Y-%m-%d') 
+     //     as end_string,date_format(ending_time,'%m-%d') as e")) -> where('seller', '<>', '')
+     //     -> orderBy('e', 'asc') -> groupBy('ending_time') -> get();
+     $result = db_query($query,'1');
+        if($result -> rowCount()  >= 0) {
          $n = 1;
          $saved_line = false;
          $e = false;
@@ -114,7 +117,8 @@ class Ebay {
   }
   
     //draw return an auction object for rendering
-    public function one_auction($auction_number, $start_at, $limit_results_to, $auction_end, $encoded_revised_auction_time) {
+    public function one_auction($auction_number, $start_at, $limit_results_to, 
+        $auction_end, $encoded_revised_auction_time) {
 
       $auction = new \stdClass;
       $auction -> bidders = array();
@@ -149,7 +153,7 @@ class Ebay {
           $auction -> number,
           $auction -> start_at
       ) );
-      $line = $result[0];
+      $line = $result -> fetchObject();
       $auction -> max_bid = $line -> max_bid;
       
       // get second higest bid in this auction
@@ -157,11 +161,11 @@ class Ebay {
         $query = "select max(bid_amount) as second_bid from ebay where bidder!=''
     and auction_number=? and bid_amount<? and bid_time<=?";
         // print "$query<br>";
-        $result = db_query( $query, array (
+        $result = db_query( $query, [
             $auction -> number,
             $auction -> max_bid,
             $auction -> start_at
-        ) );
+        ] );
         $line = $result[0];
         $auction -> second_bid = $line -> second_bid;
         // print "$second_bid<br>";
@@ -173,10 +177,8 @@ class Ebay {
     date_format(ending_time,'%T') as nice_ending_time
   from ebay where auction_number=? and seller!='' limit 1";
       // print "$query<br>";
-      $result = db_query ( $query, array (
-          $auction -> number
-      ) );
-      $line = $result[0];
+      $result = db_query ( $query, [$auction -> number] );
+      $line = $result -> fetchObject();
       $auction -> seller = $line -> seller;
       $auction -> nice_starting_day = $line -> nice_starting_day;
       $auction -> nice_starting_time = $line -> nice_starting_time;
@@ -191,7 +193,7 @@ class Ebay {
           $auction -> number,
           $auction -> start_at,
           $auction -> limit_results_to
-      ) )) and (count($result) > 0)) {
+      ) )) and ($result -> rowCount() > 0)) {
        foreach ($result as $line ) {
         $auction -> bidders[] = $line;
         /*          $bidder = $line -> bidder;
@@ -211,14 +213,5 @@ class Ebay {
         return $auction;      
     }
     //write out the auction in html
- public function zaq_get_body($nid = false) {
-  //$node is the nid of a bit of content
-  if(!$nid) return "Undefined node - no content can be returned";
- // $query = "select body_value from field_revision_body where entity_id=?";
- // $result = u_get($query, array($node));
- //$result = DB::table('teamzaq.field_revision_body') -> where('entity_id', $nid) -> value('body_value');
- $result = db_query("select body_value from teamzq.field_revision_body where entity_id=?", [$nid]);
-  return $result;
-}
 
 }
