@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\Montoya\Controller;
+namespace Drupal\eBay\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Symfony\Component\Http\Foundation\Request;
@@ -10,133 +10,233 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Drupal\support_documents\Plugin\CurlClient;
 use Drupal\support_documents\Plugin\UText;
+use Drupal\eBay\Plugin\eBay;
+use Drupal\eBay\Plugin\Utility;
 //use Drupal\support_documents\Plugin\TopicLinks;
 use Parsedown;
 
 /**
  * Defines HelloController class.
  */
-class MontoyaController extends ControllerBase {
+class eBayController extends ControllerBase {
   
   /**
    * Display the markup.
    *
    * @return array Return markup array.
+   * 
    */
-  public function content($page_name) {
-    $client = new CurlClient ();
-    $topics = array();
-    //$config = \Drupal::config('support_documents.wiki_settings');
-    //$url = $config -> get('wiki_url');
+  public function main () {
+    $request = \Drupal::request();
+    $auction_end = false;
+    $start_from = false;
+    $limit_results_to = false;
+    if($request -> get('auction_end')) {
+      $auction_end = $request -> get('auction_end');
+      if(strlen($auction_end) != 10) die("Invalid ending date");
+    }
+    if($request -> get('start_from')) {
+      $start_from = $request -> get('start_from');
+      if((strlen($start_from) > 0) and (strlen($start_from) != 19)) die("Invalid starting date");
+    }
+    if($request -> get('limit_results_to')) {
+      $limit_results_to = $request -> get('limit_results_to');
+      if(!is_numeric($limit_results_to)) die("Invalid limit for results");
+    }
+    if(!$auction_end ) $auction_end = "2001-06-06";
+    if(!$start_from) $start_from = "2001-06-06+00:00:01";
+    if(!$limit_results_to) $limit_results_to = 5;
+    $ebay = new Ebay();
+    return [
+        '#theme' => 'main',
+        '#auctions' => $ebay -> driver($start_from, $auction_end, $limit_results_to),
+        '#days' => $ebay -> getDays($limit_results_to),
+    ];
+//    return view('ebay',
+  //      array('auctions' => $ebay -> driver($start_from, $auction_end, $limit_results_to, true)));
+  }
+  
+  public function intro($start_from = false, $auction_end = false, $limit_results_to = false) {
+    $ebay = new eBay();
+    $u = new Utility();
+    $parsedown = new Parsedown();
+    $module_handler = \Drupal::service('module_handler');
+    $assets_path = $module_handler -> getModule('eBay') -> getPath();
+    $test_path = $assets_path.'/assets';
+    $part1 = $parsedown -> text(file_get_contents($test_path.'/intro.0.md'));
+    $part2 = $parsedown -> text(file_get_contents($test_path.'/intro.1.md'));
+//    drupal_set_message($u -> look_at($part1));
 
-    $page = new UText ();
-  //
-/*$request = \Drupal::request();
-  $session =  $request -> getSession();
-  dpm($session -> get('cas_attributes'));*/
-    //$url = 'https://montoya3.econ.ubc.ca/api/v4/projects/42/wikis';
-    //drupal_set_message($page_name);
-    if (!$page_name or ($page_name == 'index')) {
-      $datas = CurlClient :: get ();
-      foreach ( $datas as $data ) {
-        $parts = explode ( '|', $data -> title );
-        $data -> title = $parts [0];
-        $data -> topic = $parts [1];
-        $data -> index = $parts [2];
-        if ($data -> topic == 'index') {
-          $index_page = $data -> slug;
-          
-        } else if (in_array($data -> topic, $topics) === false) {
-          $topics[] = $data -> topic;
-        }
-        //$wikis [] = $data;
-      }
-      
- 
-      $faq = CurlClient :: get($index_page);
-      $title = $page -> get_title($faq -> title);
-      $page -> add_text ( t ( '<h2>' . $title . '</h2>' ) );
-      $parsedown = new Parsedown ();
-      $page -> add_text($parsedown -> text($faq -> content));
-      $page -> add_text('<h3>Articles</h3><ol>');
-      foreach($topics as $topic) {
-        $page -> add_text(TopicLinks :: get_menu($topic));
-      }
-      $page -> add_text ( t ( '</ol>' ) );
-    } else {
-      $faq = CurlClient :: get($page_name);
-      if(!$faq -> title) {
-        $page -> add_text("reply from <br>$faq->url<br>$faq->message");
-      }
-      $title = $page -> get_title($faq -> title);
-      //$page -> add_text ( t ( '<h2>' . $title . '</h2>' ) );
-      $parsedown = new Parsedown ();
-      //drupal_set_message($page -> look_at($parsedown -> text($faq -> content)));
-      $page -> add_text(t($parsedown -> text($faq -> content)));
+    $request = \Drupal::request();
+    if($request -> get('auction_end')) {
+      $auction_end = $request -> get('auction_end');
+      if(strlen($auction_end) != 10) die("Invalid ending date");
     }
-    return [ '#type' => 'markup',
-      	     '#markup' => $page -> get_text(),
-	   ];
-  }
-  public function ebay($pagename) {
-    $f = new Front();
-    switch($pagename) {
-      case 'intro':
-        return $f -> intro();
-        break;
-      case 'main':
-        return $f -> main_page();
-        break;
-      case 'sniping':
-        return $f -> sniping();
-        break;
-      case 'cross':
-        return $f -> cross();
-        break;
-      case 'against':
-        return $f -> against();
-        break;
-      case 'groping':
-        return $f -> groping();
-        break;      
+    if($request -> get('start_from')) {
+      $start_from = $request -> get('start_from');
+      if((strlen($start_from) > 0) and (strlen($start_from) != 19)) die("Invalid starting date");
     }
+    if($request -> get('limit_results_to')) {
+      $limit_results_to = $request -> get('limit_results_to');
+      if(!is_numeric($limit_results_to)) die("Invalid limit for results");
+    }
+    if(!$auction_end ) $auction_end = "2001-06-06";
+    if(!$start_from) $start_from = "2001-06-06+00:00:01";
+    if(!$limit_results_to) $limit_results_to = 5;
+    //drupal_set_message($u -> look_at($ebay -> driver($start_from, "2001-06-06", $limit_results_to)));
+    return [
+        '#theme' => 'intro',
+        '#part1' => $part1,
+        '#part2' => $part2,
+        //'#description' => $line -> description,
+        '#auctions' => $ebay -> driver($start_from, "2001-06-06", $limit_results_to),    
+];
+    
   }
-  /*
-   * display a pdf file
-   * the files are retrieved from urls like
-   * https://montoya.econ.ubc.ca/svn-econ/Econ600/web
-   * $filename should be set a variable while $filepath should be hard coded in the routing file to be either
-   * Econ600 or Econ306 (or whatever)  
-   * the idea is to translate the url https://montoya.econ.ubc.ca/Econ600/preference_lecture.pdf
-   * to https://montoya.econ.ubc.ca/svn-econ/Econ600/web/preference_lecture.pdf
-   * in which case $filename=preference_lecture.pdf and filepath=Econ600
-  */
-  public function pdf($filename, $filepath) {
-      $command = "/usr/bin/svn cat file:///home/peters/rpos/courses/".$filepath."/web/".$filename;
-      $contents = '';
-     // error_reporting(E_ALL);
-      error_reporting(0);
-      if(!($handle = popen($command, 'r'))) {
-        $this -> error = true;
-        $this -> message = "pipe failure opening handle";
-      }
-      while (!feof($handle)) {
-        $contents .= fread($handle, 8192);
-      }
-      pclose($handle);
-      $ext = pathinfo($filename, PATHINFO_EXTENSION);
-      $response = new Response($contents);
-      if($ext == 'pdf') {
-      $disposition = $response -> headers -> makeDisposition(
-            ResponseHeaderBag::DISPOSITION_INLINE,
-            $filename
-          );
-        $response -> headers -> set('Content-Disposition', $disposition);
-        $response -> headers -> set('Content-Type','application/pdf');
-      }
-      return $response;
-      
-    //$url = 'file:///home/peters/rpos/courses/'.$filepath.'/web/'.$filename;
-   
+  public function sniping($start_from = false, $auction_end = false, $limit_results_to = false) {
+    $ebay = new eBay();
+    $u = new Utility();
+    $parsedown = new Parsedown();
+    $module_handler = \Drupal::service('module_handler');
+    $assets_path = $module_handler -> getModule('eBay') -> getPath();
+    $test_path = $assets_path.'/assets';
+    $part1 = $parsedown -> text(file_get_contents($test_path.'/sniping.md'));
+    // $part2 = $parsedown -> text(file_get_contents($test_path.'/intro.1.md'));
+    //    drupal_set_message($u -> look_at($part1));
+    
+    $request = \Drupal::request();
+    if($request -> get('auction_end')) {
+      $auction_end = $request -> get('auction_end');
+      if(strlen($auction_end) != 10) die("Invalid ending date");
+    }
+    if($request -> get('start_from')) {
+      $start_from = $request -> get('start_from');
+      if((strlen($start_from) > 0) and (strlen($start_from) != 19)) die("Invalid starting date");
+    }
+    if($request -> get('limit_results_to')) {
+      $limit_results_to = $request -> get('limit_results_to');
+      if(!is_numeric($limit_results_to)) die("Invalid limit for results");
+    }
+    if(!$auction_end ) $auction_end = "2001-06-19";
+    if(!$start_from) $start_from = "2001-06-19+00:00:01";
+    if(!$limit_results_to) $limit_results_to = 5;
+    //drupal_set_message($u -> look_at($ebay -> driver($start_from, "2001-06-10", $limit_results_to)));
+    return [
+        '#theme' => 'cross',
+        '#part1' => $part1,
+        //'#description' => $line -> description,
+        '#auctions' => $ebay -> driver($start_from, "2001-06-19", $limit_results_to),
+        '#days' => $ebay -> getDays($limit_results_to),
+    ];
+    
   }
-}
+  public function cross($start_from = false, $auction_end = false, $limit_results_to = false) {
+    $ebay = new eBay();
+    $u = new Utility();
+    $parsedown = new Parsedown();
+    $module_handler = \Drupal::service('module_handler');
+    $assets_path = $module_handler -> getModule('eBay') -> getPath();
+    $test_path = $assets_path.'/assets';
+    $part1 = $parsedown -> text(file_get_contents($test_path.'/cross.md'));
+   // $part2 = $parsedown -> text(file_get_contents($test_path.'/intro.1.md'));
+    //    drupal_set_message($u -> look_at($part1));
+    
+    $request = \Drupal::request();
+    if($request -> get('auction_end')) {
+      $auction_end = $request -> get('auction_end');
+      if(strlen($auction_end) != 10) die("Invalid ending date");
+    }
+    if($request -> get('start_from')) {
+      $start_from = $request -> get('start_from');
+      if((strlen($start_from) > 0) and (strlen($start_from) != 19)) die("Invalid starting date");
+    }
+    if($request -> get('limit_results_to')) {
+      $limit_results_to = $request -> get('limit_results_to');
+      if(!is_numeric($limit_results_to)) die("Invalid limit for results");
+    }
+    if(!$auction_end ) $auction_end = "2001-06-10";
+    if(!$start_from) $start_from = "2001-06-10+00:00:01";
+    if(!$limit_results_to) $limit_results_to = 5;
+    //drupal_set_message($u -> look_at($ebay -> driver($start_from, "2001-06-10", $limit_results_to)));
+    return [
+        '#theme' => 'cross',
+        '#part1' => $part1,
+        //'#description' => $line -> description,
+        '#auctions' => $ebay -> driver($start_from, "2001-06-10", $limit_results_to),
+        '#days' => $ebay -> getDays($limit_results_to),
+    ];
+    
+  }
+  public function against($start_from = false, $auction_end = false, $limit_results_to = false) {
+    $ebay = new eBay();
+    $u = new Utility();
+    $parsedown = new Parsedown();
+    $module_handler = \Drupal::service('module_handler');
+    $assets_path = $module_handler -> getModule('eBay') -> getPath();
+    $test_path = $assets_path.'/assets';
+    $part1 = $parsedown -> text(file_get_contents($test_path.'/against.md'));
+    // $part2 = $parsedown -> text(file_get_contents($test_path.'/intro.1.md'));
+    //    drupal_set_message($u -> look_at($part1));
+    
+    $request = \Drupal::request();
+    if($request -> get('auction_end')) {
+      $auction_end = $request -> get('auction_end');
+      if(strlen($auction_end) != 10) die("Invalid ending date");
+    }
+    if($request -> get('start_from')) {
+      $start_from = $request -> get('start_from');
+      if((strlen($start_from) > 0) and (strlen($start_from) != 19)) die("Invalid starting date");
+    }
+    if($request -> get('limit_results_to')) {
+      $limit_results_to = $request -> get('limit_results_to');
+      if(!is_numeric($limit_results_to)) die("Invalid limit for results");
+    }
+    if(!$auction_end ) $auction_end = "2001-06-29";
+    if(!$start_from) $start_from = "2001-06-29+00:00:01";
+    if(!$limit_results_to) $limit_results_to = 5;
+    //drupal_set_message($u -> look_at($ebay -> driver($start_from, "2001-06-10", $limit_results_to)));
+    return [
+        '#theme' => 'cross',
+        '#part1' => $part1,
+        //'#description' => $line -> description,
+        '#auctions' => $ebay -> driver($start_from, "2001-06-29", $limit_results_to),
+        '#days' => $ebay -> getDays($limit_results_to),
+    ];
+  }
+  public function groping($start_from = false, $auction_end = false, $limit_results_to = false) {
+    $ebay = new eBay();
+    $u = new Utility();
+    $parsedown = new Parsedown();
+    $module_handler = \Drupal::service('module_handler');
+    $assets_path = $module_handler -> getModule('eBay') -> getPath();
+    $test_path = $assets_path.'/assets';
+    $part1 = $parsedown -> text(file_get_contents($test_path.'/groping.md'));
+    // $part2 = $parsedown -> text(file_get_contents($test_path.'/intro.1.md'));
+    //    drupal_set_message($u -> look_at($part1));
+    
+    $request = \Drupal::request();
+    if($request -> get('auction_end')) {
+      $auction_end = $request -> get('auction_end');
+      if(strlen($auction_end) != 10) die("Invalid ending date");
+    }
+    if($request -> get('start_from')) {
+      $start_from = $request -> get('start_from');
+      if((strlen($start_from) > 0) and (strlen($start_from) != 19)) die("Invalid starting date");
+    }
+    if($request -> get('limit_results_to')) {
+      $limit_results_to = $request -> get('limit_results_to');
+      if(!is_numeric($limit_results_to)) die("Invalid limit for results");
+    }
+    if(!$auction_end ) $auction_end = "2001-06-27";
+    if(!$start_from) $start_from = "2001-06-27+00:00:01";
+    if(!$limit_results_to) $limit_results_to = 5;
+    //drupal_set_message($u -> look_at($ebay -> driver($start_from, "2001-06-10", $limit_results_to)));
+    return [
+        '#theme' => 'groping',
+        '#part1' => $part1,
+        //'#description' => $line -> description,
+        '#auctions' => $ebay -> driver($start_from, "2001-06-27", $limit_results_to),
+        '#days' => $ebay -> getDays($limit_results_to),
+    ];
+  }
+ }

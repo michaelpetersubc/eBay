@@ -1,0 +1,50 @@
+{% for auction in auctions.auctions %}
+<div style="float: left;">
+<table border=1><tr border=1><td><em>Seller</em><br><b>{{ auction.seller }}</b></td><td>
+  <em>Starts</em><br><b>{{ auction.nice_starting_day }}
+  <br>@ {{ auction.nice_starting_time }}</b></td><td><em>ends</em><br><b>{{ auction.nice_ending_day }}
+  <br>@ {{ auction.nice_ending_time }}</b></td></tr><tr><td>
+  <em>Bidder</em></td><td><em>Bid</em></td><td><em>Time</em></td></tr>
+  {% for bidder in auction.bidders %}
+  	   {% if bidder.bid_amount == auction.max_bid and bidder.bid_time == auction.start_at %}  
+  	     <tr><td><font color="green"><blink>{{ bidder.bidder }}</blink></font></td>
+  		 <td><font color=\"green">{{ bidder.bid_amount }}</font> </td>
+  		 <td><font color="green">{{ bidder.nice_bid_time }}</font></td></tr>
+        {% elseif bidder.bid_amount == auction.max_bid %}
+          <tr><td><font color="green">{{ bidder.bidder }}</font></td>
+          <td><font color="green">{{ bidder.bid_amount }}</font></td>
+          <td><font color="green">{{ bidder.nice_bid_time }}</font></td></tr>
+        {% elseif bidder.bid_amount == auction.second_bid and bidder.bid_time == auction.start_at %}
+          <tr><td><font color="red"><blink>{{ bidder.bidder }}</blink></font></td>
+          <td><font color="red">{{ bidder.bid_amount }}</font> </td>
+          <td><font color="red">{{ bidder.nice_bid_time }}</font></td></tr>
+        {% elseif bidder.bid_amount == auction.second_bid %} 
+          <tr><td><font color="red">{{ bidder.bidder }}</font></td>
+          <td><font color="red">{{ bidder.bid_amount }}</font> </td>
+          <td><font color="red">{{ bidder.nice_bid_time }}</font></td></tr>
+        {% elseif bidder.bid_time == auction.start_at %} 
+          <tr><td><blink>{{ bidder.bidder }}</blink></td>
+          <td>  {{ bidder.bid_amount }} </td>
+          <td> {{ bidder.nice_bid_time }}</td></tr>
+        {% else %}
+          <tr><td>{{ bidder.bidder }}</td><td>{{ bidder.bid_amount }} </td>
+          <td> {{ bidder.nice_bid_time }}</td></tr>
+        {% endif %}
+   {% endfor %}
+        {% if auction.next_time %} 
+          <tr><td>Bidding next here:<br> {{ auction.next_bidder }}</td><td>
+          <a href="?auction_end={{ auction.end }}&start_from={{ auction.new_start_from }}&limit_results_to={{ auction.limit_results_to }}">
+          Add Next <br>Bid Here</a></td><td>
+          <a href="?auction_end={{ auction.end }}&start_from={{ auction.encoded_revised_auction_time }}&limit_results_to={{ auction.limit_results_to }}">
+          Add Next <br>Overall Bid</a></td></tr></table>
+        {% else %}
+          <tr><td>Auction Finished</td><td></td><td></td></div></tr></table>
+        {% endif %}
+ </div>
+ {%  endfor %}
+ <div style="clear: both;"></div>
+ Use the following links to view the auctions that ocurred on other days during the month.<p>
+ {% for day in days %}
+ <div style="float: left;">|<a href="main?auction_end={{ day.end_string }}&start_from={{ day.end_string }}+00:00:00&limit_results_to={{ day.limit_results_to }}">{{ day.end_string }} {{ day.number_of_auctions }} auctions)</a>|
+ </div>
+ {% endfor %} 
