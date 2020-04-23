@@ -1,9 +1,59 @@
 eBay.intro:
-  path: '/ebay/intro'
+  path: '/eBay/intro'
   defaults:
-    _controller: '\Drupal\eBay\Controller\eBayController::content'
+    _controller: '\Drupal\eBay\Controller\eBayController::intro'
     _title: 'eBay'
-    page_name: 'MicroTopics|econ515|0'
+    page_name: 'Introduction'
+  requirements:
+    _permission: 'access content'
+  options:
+    no_cache: true
+eBay.main:
+  path: '/eBay/main'
+  defaults:
+    _controller: '\Drupal\eBay\Controller\eBayController::main'
+    _title: 'main'
+    page_name: 'Auctions'
+  requirements:
+    _permission: 'access content'
+  options:
+    no_cache: true
+eBay.cross:
+  path: '/eBay/cross'
+  defaults:
+    _controller: '\Drupal\eBay\Controller\eBayController::cross'
+    _title: 'Cross Bidding'
+    page_name: 'Cross Bidding'
+  requirements:
+    _permission: 'access content'
+  options:
+    no_cache: true
+eBay.against:
+  path: '/eBay/against'
+  defaults:
+    _controller: '\Drupal\eBay\Controller\eBayController::against'
+    _title: 'Against'
+    page_name: 'Bid Against yourself'
+  requirements:
+    _permission: 'access content'
+  options:
+    no_cache: true
+eBay.sniping:
+  path: '/eBay/sniping'
+  defaults:
+    _controller: '\Drupal\eBay\Controller\eBayController::sniping'
+    _title: 'Sniping'
+    page_name: 'Sniping'
+  requirements:
+    _permission: 'access content'
+  options:
+    no_cache: true
+eBay.groping:
+  path: '/eBay/groping'
+  defaults:
+    _controller: '\Drupal\eBay\Controller\eBayController::groping'
+    _title: 'Groping'
+    page_name: 'Groping'
   requirements:
     _permission: 'access content'
   options:

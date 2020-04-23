@@ -1,0 +1,61 @@
+<?php 
+function eBay_theme($existing, $type, $theme, $path) {
+
+  return [
+    'intro' => [
+      'type' => 'module',
+      'template' => 'intro',
+      'variables' => [
+        'part1' => NULL,
+        'part2' => NULL, 
+        'auctions' => NULL, 
+        ],
+      ],
+    'main' => [
+      'type' => 'module',
+      'template' => 'main',
+      'variables' => [
+        'auctions' => NULL,
+        'days' => NULL,
+         ],
+      ],
+     'cross' => [
+          'type' => 'module',
+          'template' => 'cross',
+          'variables' => [
+              'part1' => NULL,
+              'auctions' => NULL,
+              'days' => NULL,
+          ],
+      ],
+      'against' => [
+          'type' => 'module',
+          'template' => 'against',
+          'variables' => [
+              'part1' => NULL,
+              'auctions' => NULL,
+              'days' => NULL,
+          ],
+      ],
+      'sniping' => [
+          'type' => 'module',
+          'template' => 'sniping',
+          'variables' => [
+              'part1' => NULL,
+              'auctions' => NULL,
+              'days' => NULL,
+          ],
+      ],
+      'groping' => [
+          'type' => 'module',
+          'template' => 'groping',
+          'variables' => [
+              'part1' => NULL,
+              'auctions' => NULL,
+              'days' => NULL,
+          ],
+      ],
+      
+      
+      ];
+}
