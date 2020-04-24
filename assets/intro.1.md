@@ -15,6 +15,7 @@ Bid", will do exactly the same thing.
 
 You can step through this example a little more conveniently by looking at the link [Step through the example](https://montoya.econ.ubc.ca/eBay/main), which will also give you access to all the other auctions that occurred during the month.
 
+This module and all the data used to produce it can be downloaded from [https://github.com/michaelpetersubc/eBay](https://github.com/michaelpetersubc/eBay).
 ### Examples of Bidding Behavior
 
 The links below will take you through examples illustrating some of the unusual kinds of behavior that
