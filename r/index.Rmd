@@ -1,0 +1,126 @@
+---
+title: 'Ebay Camera Auctions'
+output: html_document
+runtime: shiny
+
+# Auctions
+
+```{r, echo = FALSE}
+library(tidyverse)
+library(dplyr)
+library(tidyverse)
+library(magrittr)
+library(lubridate)
+library(modelr)
+library(scales)
+
+# import data
+camera_named <- as_tibble(read_csv("camera_named.csv", col_types = 
+                        cols(
+                                  bid_id = col_double(),
+                                  item_id = col_double(),
+                                  product = col_character(),
+                                  model = col_character(),
+                                  buy_it_now = col_double(),
+                                  seller = col_character(),
+                                  reserve_price = col_double(),
+                                  seller_feedback = col_integer(),
+                                  bidder = col_character(),
+                                  bid_price = col_double(),
+                                  buyer_feedback = col_integer(),
+                                  X12 = col_logical(),
+                                  X13 = col_logical(),
+                                  X14 = col_logical(),
+                                  bid_time = col_datetime(format = ""),
+                                  start_time = col_datetime(format = ""),
+                                  end_time = col_datetime(format = "")
+                                ))
+                              )
+
+
+
+
+
+# investigate function
+investigate_id <- function(id, t) {
+    # id - the auction number
+    # t - a tibble representing the current data set
+  # easier to investigate an auction
+  auctions <- t %>% 
+    filter(item_id == id) %>% 
+    arrange(desc(bid_time))
+  y_low = median(auctions$reserve_price)-1
+  y_high = max(auctions$bid_price)+1
+  low <- mean(auctions$start_time)
+  high <- mean(auctions$end_time)
+  #rank(bid_time)
+    #scale_x_continuous(breaks = seq_along(auctions)) +
+  p <- ggplot(auctions, aes(x = bid_time, y = bid_price)) +
+    geom_hline(aes(yintercept =  mean(buy_it_now), colour = 'sales price'), alpha = 0.5, size = 2) +
+    geom_hline(aes(yintercept =  mean(reserve_price), colour = 'reserve price')) +
+    geom_hline(aes(yintercept =  max(bid_price), colour = 'highest bid')) +
+    scale_colour_manual(values = c("blue", "red", "green")) +
+    geom_point() +
+    
+    xlim(low, high) +
+    ylim(y_low,y_high) +
+    labs(
+      title = paste("Investigation for the auction of item ", id,low, sep = " "),
+      x = "Time of Bid",
+      y = "Bid price"
+    )
+  print(p)
+  
+  invisible(auctions)
+  }
+
+auction_table <- function(id, t) {
+   auctions <- t %>%
+    filter(item_id == id) %>%
+    select(model,buy_it_now,bidder,bid_price,X12,X13,X14,bid_time) %>%
+    arrange(desc(bid_time))
+ auctions
+}
+#
+auction_ids <- function(t) {
+  
+}
+# create summary function
+#trades <- camera_named %>%
+#  # a summary for all trades
+#  group_by(item_id) %>% 
+#  summarise(buy_it_now = median(buy_it_now),
+#            first_bid = first(bid_price, order_by = bid_time),
+#            highest_bid = max(bid_price),
+#            n_bids = n(),
+#            m_X12 = as.logical(mean(X12)),
+#           m_X13 = as.logical(mean(X13)),
+#            m_X14 = as.logical(mean(X14))
+#            ) %>% 
+#  arrange(desc(n_bids))
+
+#class(camera_named$start_time)
+
+# A third
+ui <- fluidPage(
+   numericInput("item_id", "Auction Id", 324882778, min=1, max = 999999999),
+   plotOutput("pict"),
+   fluidRow(
+     column(8,
+     tableOutput("table")
+     )
+    )
+
+)
+server <- function (input, output) {
+       output$pict <- renderPlot({investigate_id(input$item_id, camera_named)})
+       output$table <- renderTable(auction_table(input$item_id, camera_named))
+}
+shinyApp(ui, server)
+
+# an example of investigate function
+
+
+```
+
+
