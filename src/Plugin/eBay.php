@@ -28,7 +28,7 @@ class eBay {
        date_format(bid_time,'%Y-%m-%d')=date_format(?,'%Y-%m-%d')
        and bid_time>? order by bid_time asc limit 1";
       //print "$first_query";
-      if($result = db_query($query, array($auction_ending_day, $start_at_loop)) -> fetchAll()) {
+      if($result = $db -> query($query, array($auction_ending_day, $start_at_loop)) -> fetchAll()) {
         if( count($result) > 0) {
     
           $line = $result[0];
@@ -42,7 +42,7 @@ class eBay {
         //the query asks for a seller with the right auction number and ending date
         // if such a seller exists, break out of the loop
         //if not the end date is wrong, revise the auction end time and do the query again
-        if(($result = db_query($query, array($line -> tentative_auction, 
+        if(($result = $db -> query($query, array($line -> tentative_auction, 
             $auction_ending_day)) -> fetchAll()) 
             and (count($result) > 0)) $keep_going = false;
         else $start_at_loop = $line -> revised_auction_time;
@@ -61,7 +61,7 @@ class eBay {
     $first_query = "select auction_number from ebay.ebay where seller!='' 
     		and date_format(ending_time,'%Y-%m-%d')=date_format(?,'%Y-%m-%d')";
     
-    if($first_result = db_query($first_query, array($auction_ending_day)) -> fetchAll()) {
+    if($first_result = $db -> query($first_query, array($auction_ending_day)) -> fetchAll()) {
       // if there are some auctions ending, go through the display for each one
       if(count($first_result) > 0) {
         foreach ($first_result as $first_line) {
@@ -89,7 +89,7 @@ class eBay {
      //   count(seller) as number_of_auctions,date_format(ending_time,'%Y-%m-%d') 
      //     as end_string,date_format(ending_time,'%m-%d') as e")) -> where('seller', '<>', '')
      //     -> orderBy('e', 'asc') -> groupBy('ending_time') -> get();
-     $this_result = db_query($query,'1') -> fetchAll();
+     $this_result = $db -> query($query,'1') -> fetchAll();
         if(count($result)  >= 0) {
          $n = 1;
          $saved_line = false;
@@ -124,6 +124,7 @@ class eBay {
     //draw return an auction object for rendering
     public function one_auction($auction_number, $start_at, $limit_results_to, 
         $auction_end, $encoded_revised_auction_time) {
+	$db = \Drupal :: database();
 
       $auction = new \stdClass;
       $auction -> bidders = array();
@@ -154,7 +155,7 @@ class eBay {
       $query = "select max(bid_amount) as max_bid from ebay.ebay where bidder!=''
     and auction_number=? and bid_time<=?";
       // print "$query<br>";
-      $result = db_query( $query, [
+      $result = $db -> query( $query, [
           $auction -> number,
           $auction -> start_at
       ]) -> fetchAll();
@@ -166,7 +167,7 @@ class eBay {
         $query = "select max(bid_amount) as second_bid from ebay.ebay where bidder!=''
     and auction_number=? and bid_amount<? and bid_time<=?";
         // print "$query<br>";
-        $result = db_query( $query, [
+        $result = $db -> query( $query, [
             $auction -> number,
             $auction -> max_bid,
             $auction -> start_at
@@ -194,7 +195,7 @@ class eBay {
       $query = "SELECT bidder,bid_amount,bid_time,date_format(bid_time,'%a %T') as nice_bid_time
       FROM ebay.ebay where bidder!='' and auction_number=? and bid_time<=?
       order by bid_time desc limit ".$auction -> limit_results_to;
-      if (($result = db_query( $query, array (
+      if (($result = $db -> query( $query, array (
           $auction -> number,
           $auction -> start_at,
           //$auction -> limit_results_to
@@ -219,10 +220,11 @@ class eBay {
     }
     //write out the auction in html
     public function getDays($limit_results_to) {
-      //an array containing days of the month with the number of auctions to use at the bottom of the page
+    	   $db = \Drupal :: database();
+//an array containing days of the month with the number of auctions to use at the bottom of the page
       $query = "select count(seller) as number_of_auctions,date_format(ending_time,'%Y-%m-%d') 
           as end_string,$limit_results_to as limit_results_to from ebay.ebay where seller !='' group by end_string";
-      $result = db_query($query,[1]) -> fetchAll();
+      $result = $db -> query($query,[1]) -> fetchAll();
       return $result;      
     }
 
