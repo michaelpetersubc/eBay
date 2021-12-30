@@ -9,6 +9,7 @@ class eBay {
 
   public function driver($start_from, $auction_end, $limit_results_to, $front_page = false) {
     $page = new Utility();
+    $db = \Drupal :: database();
     $auctions = new \stdClass;
     $start_at = urldecode($start_from);
     $start_at_loop = $start_at;
@@ -135,7 +136,7 @@ class eBay {
       $query = "select bid_time as next_time,bidder as next_bidder from ebay.ebay where bidder!=''
     and auction_number=? and bid_time>? order by bid_time asc limit 1";
       // print "$query<br>";
-      if ($result = db_query ( $query, array (
+      if ($result = $db -> query( $query, array (
           $auction -> number,
           $auction -> start_at
       ) ) -> fetchAll()) {
@@ -181,7 +182,7 @@ class eBay {
     date_format(ending_time,'%T') as nice_ending_time
   from ebay.ebay where auction_number=? and seller!='' limit 1";
       // print "$query<br>";
-      $result = db_query ( $query, [$auction -> number] ) -> fetchAll();
+      $result = $db -> query( $query, [$auction -> number] ) -> fetchAll();
       $line = $result[0];
       $auction -> seller = $line -> seller;
       $auction -> nice_starting_day = $line -> nice_starting_day;
