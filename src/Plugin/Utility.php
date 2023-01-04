@@ -33,5 +33,12 @@ class Utility {
       if(!$time) $time = \Drupal::time() -> getCurrentTime();
           return date("Y-m-d H:i:s", $time);          
   }
-  
+  public function validateDate($url_encoded_date, $format = 'Y-m-d') {
+    $date_string = urldecode($url_encoded_date);
+    if(!($d = \DateTime::createFromFormat($format, $date_string))) return false;
+    // The Y ( 4 digits year ) returns TRUE for any integer with any number of digits so changing the comparison from == to === fixes the issue.
+    if($d -> format($format) === $date_string) return $date_string;
+    else return false;
+}
+
 }

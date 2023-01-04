@@ -28,23 +28,22 @@ class eBayController extends ControllerBase {
    */
   public function main () {
     $request = \Drupal::request();
+    $u = new Utility();
     $auction_end = false;
     $start_from = false;
     $limit_results_to = false;
     if($request -> get('auction_end')) {
-      $auction_end = $request -> get('auction_end');
-      if(strlen($auction_end) != 10) die("Invalid ending date");
+      if(!($auction_end = $u -> validateDate($request -> get('auction_end'))) ) die("Invalid ending date");
     }
     if($request -> get('start_from')) {
-      $start_from = $request -> get('start_from');
-      if((strlen($start_from) > 0) and (strlen($start_from) != 19)) die("Invalid starting date");
+      if(!($start_from = $u -> validateDate($request -> get('start_from'), "Y-m-d H:i:s")) ) die("Invalid starting date");
     }
     if($request -> get('limit_results_to')) {
       $limit_results_to = $request -> get('limit_results_to');
       if(!is_numeric($limit_results_to)) die("Invalid limit for results");
     }
     if(!$auction_end ) $auction_end = "2001-06-06";
-    if(!$start_from) $start_from = "2001-06-06+00:00:01";
+    if(!$start_from) $start_from = "2001-06-06 00:00:01";
     if(!$limit_results_to) $limit_results_to = 5;
     $ebay = new Ebay();
     return [
@@ -52,8 +51,6 @@ class eBayController extends ControllerBase {
         '#auctions' => $ebay -> driver($start_from, $auction_end, $limit_results_to),
         '#days' => $ebay -> getDays($limit_results_to),
     ];
-//    return view('ebay',
-  //      array('auctions' => $ebay -> driver($start_from, $auction_end, $limit_results_to, true)));
   }
   
   public function intro($start_from = false, $auction_end = false, $limit_results_to = false) {
@@ -69,19 +66,17 @@ class eBayController extends ControllerBase {
 
     $request = \Drupal::request();
     if($request -> get('auction_end')) {
-      $auction_end = $request -> get('auction_end');
-      if(strlen($auction_end) != 10) die("Invalid ending date");
+      if(!($auction_end = $u -> validateDate($request -> get('auction_end'))) ) die("Invalid ending date");
     }
     if($request -> get('start_from')) {
-      $start_from = $request -> get('start_from');
-      if((strlen($start_from) > 0) and (strlen($start_from) != 19)) die("Invalid starting date");
+      if(!($start_from = $u -> validateDate($request -> get('start_from'), "Y-m-d H:i:s")) ) die("Invalid starting date");
     }
     if($request -> get('limit_results_to')) {
       $limit_results_to = $request -> get('limit_results_to');
       if(!is_numeric($limit_results_to)) die("Invalid limit for results");
     }
     if(!$auction_end ) $auction_end = "2001-06-06";
-    if(!$start_from) $start_from = "2001-06-06+00:00:01";
+    if(!$start_from) $start_from = "2001-06-06 00:00:01";
     if(!$limit_results_to) $limit_results_to = 5;
     //drupal_set_message($u -> look_at($ebay -> driver($start_from, "2001-06-06", $limit_results_to)));
     return [
@@ -106,12 +101,10 @@ class eBayController extends ControllerBase {
     
     $request = \Drupal::request();
     if($request -> get('auction_end')) {
-      $auction_end = $request -> get('auction_end');
-      if(strlen($auction_end) != 10) die("Invalid ending date");
+      if(!($auction_end = $u -> validateDate($request -> get('auction_end'))) ) die("Invalid ending date");
     }
     if($request -> get('start_from')) {
-      $start_from = $request -> get('start_from');
-      if((strlen($start_from) > 0) and (strlen($start_from) != 19)) die("Invalid starting date");
+      if(!($start_from = $u -> validateDate($request -> get('start_from'), "Y-m-d H:i:s")) ) die("Invalid starting date");
     }
     if($request -> get('limit_results_to')) {
       $limit_results_to = $request -> get('limit_results_to');
@@ -143,12 +136,10 @@ class eBayController extends ControllerBase {
     
     $request = \Drupal::request();
     if($request -> get('auction_end')) {
-      $auction_end = $request -> get('auction_end');
-      if(strlen($auction_end) != 10) die("Invalid ending date");
+      if(!($auction_end = $u -> validateDate($request -> get('auction_end'))) ) die("Invalid ending date");
     }
     if($request -> get('start_from')) {
-      $start_from = $request -> get('start_from');
-      if((strlen($start_from) > 0) and (strlen($start_from) != 19)) die("Invalid starting date");
+      if(!($start_from = $u -> validateDate($request -> get('start_from'), "Y-m-d H:i:s")) ) die("Invalid starting date");
     }
     if($request -> get('limit_results_to')) {
       $limit_results_to = $request -> get('limit_results_to');
@@ -180,19 +171,17 @@ class eBayController extends ControllerBase {
     
     $request = \Drupal::request();
     if($request -> get('auction_end')) {
-      $auction_end = $request -> get('auction_end');
-      if(strlen($auction_end) != 10) die("Invalid ending date");
+      if(!($auction_end = $u -> validateDate($request -> get('auction_end'))) ) die("Invalid ending date");
     }
     if($request -> get('start_from')) {
-      $start_from = $request -> get('start_from');
-      if((strlen($start_from) > 0) and (strlen($start_from) != 19)) die("Invalid starting date");
+      if(!($start_from = $u -> validateDate($request -> get('start_from'), "Y-m-d H:i:s")) ) die("Invalid starting date");
     }
     if($request -> get('limit_results_to')) {
       $limit_results_to = $request -> get('limit_results_to');
       if(!is_numeric($limit_results_to)) die("Invalid limit for results");
     }
     if(!$auction_end ) $auction_end = "2001-06-29";
-    if(!$start_from) $start_from = "2001-06-29+00:00:01";
+    if(!$start_from) $start_from = "2001-06-29 00:00:01";
     if(!$limit_results_to) $limit_results_to = 5;
     //drupal_set_message($u -> look_at($ebay -> driver($start_from, "2001-06-10", $limit_results_to)));
     return [
@@ -216,19 +205,17 @@ class eBayController extends ControllerBase {
     
     $request = \Drupal::request();
     if($request -> get('auction_end')) {
-      $auction_end = $request -> get('auction_end');
-      if(strlen($auction_end) != 10) die("Invalid ending date");
+      if(!($auction_end = $u -> validateDate($request -> get('auction_end'))) ) die("Invalid ending date");
     }
     if($request -> get('start_from')) {
-      $start_from = $request -> get('start_from');
-      if((strlen($start_from) > 0) and (strlen($start_from) != 19)) die("Invalid starting date");
+      if(!($start_from = $u -> validateDate($request -> get('start_from'), "Y-m-d H:i:s")) ) die("Invalid starting date");
     }
     if($request -> get('limit_results_to')) {
       $limit_results_to = $request -> get('limit_results_to');
       if(!is_numeric($limit_results_to)) die("Invalid limit for results");
     }
     if(!$auction_end ) $auction_end = "2001-06-27";
-    if(!$start_from) $start_from = "2001-06-27+00:00:01";
+    if(!$start_from) $start_from = "2001-06-27 00:00:01";
     if(!$limit_results_to) $limit_results_to = 5;
     //drupal_set_message($u -> look_at($ebay -> driver($start_from, "2001-06-10", $limit_results_to)));
     return [

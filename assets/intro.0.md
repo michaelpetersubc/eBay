@@ -10,14 +10,14 @@ This applet illustrates many of the 'strange'
 features of eBay bidding that have been discussed in the literature.
 This page and its associated links allow you to step through various eBay auctions to see some of the interesting behaviour that occurred. 
 
-The original intention was to compare actual behavior with what Sergei Severinov and I wrote about in the paper[An Asscending Double Auction](http://microeconomics.ca/michael_peters/information_revelation_7.pdf). In that paper we describe an efficient dynamic bidding procedure for eBay for situations in which there are many auctions for almost identical products.
+The original intention was to compare actual behavior with what Sergei Severinov and I wrote about in the paper[An Ascending Double Auction](http://microeconomics.ca/michael_peters/information_revelation_7.pdf). In that paper we describe an efficient dynamic bidding procedure for eBay for situations in which there are many auctions for almost identical products.
 
 
 This page describes how to use the applet, and the data that was used to
 construct it.  If you already know all about it and just want to play
 around with it, you can directly to the [php version](ebay.php?auction_end=2001-06-04&start_from=2001-06-04+00:00:00&limit_results_to=5). 
 
-Mingli's original applet still loads from [http://www.chass.utoronto.ca/~mzheng/AuctionApplet.html](http://www.chass.utoronto.ca/~mzheng/AuctionApplet.html), but not longer seems to function. 
+Mingli's original applet is not longer active.
 ### The Data
 
 The auctions involve sales of used Pentium 800mhz processors.  Though

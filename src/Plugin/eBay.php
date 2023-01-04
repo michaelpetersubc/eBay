@@ -11,9 +11,11 @@ class eBay {
     $page = new Utility();
     $db = \Drupal :: database();
     $auctions = new \stdClass;
-    $start_at = urldecode($start_from);
+    //$start_at = urldecode($start_from);
+    $start_at = $start_from;
     $start_at_loop = $start_at;
-    $auction_ending_day = urldecode($auction_end);
+    //$auction_ending_day = urldecode($auction_end);
+    $auction_ending_day = $auction_end;
     $auctions -> limit_results_to = $limit_results_to;
     $auctions -> auctions = array(); 
     $auctions -> front_page = array(); 
